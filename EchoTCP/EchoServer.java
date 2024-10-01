@@ -20,6 +20,8 @@ public class EchoServer {
             // abre socket TCP servidor
             serverSocket = new ServerSocket(1050);
 
+            System.out.println("Servidor pronto...");
+
             // espera por requisicao de conexao enviada pelo socket cliente
             clientSocket = serverSocket.accept();	// cria socket TCP de comunicacao com o cliente
 
@@ -28,7 +30,7 @@ public class EchoServer {
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             
 			// recebe mensagem de requisicao, escreve mensagem de requisicao e envia mensagem de resposta		
-            System.out.println("Servidor pronto...");
+            System.out.println("TCP conectado...");
 
             while(isRunning){
                 message = in.readLine();
@@ -39,11 +41,17 @@ public class EchoServer {
 
                 String[] parseMessage = message.split(" ");
 
+                if(parseMessage.length < 3) {
+                    System.out.println("Mensagem com formatação incorreta");
+                    out.println(0);
+                    continue;
+                };
+
                 int number1 = Integer.parseInt(parseMessage[0]);
                 int number2 = Integer.parseInt(parseMessage[2]);
                 String operand = parseMessage[1];
-                int result;
-
+                int result = 0;
+                
                 switch(operand) {
                     case "plus":
                         result = number1 + number2;
@@ -56,11 +64,17 @@ public class EchoServer {
                     case "minus":
                         result = number1 - number2;
                         break;
+                    case "times":
+                        result = number1 * number2;
+                        break;
                     default:
                         result = 0;
+                        System.out.println("Mensagem com operação incorreta");
+                        out.println(0);
+                        continue;
                 }
 
-                System.out.println("Do cliente ->" + message + "resultando em" + String.parseInt(result));
+                System.out.println("Do cliente -> " + message + " resultando em " + String.valueOf(result));
                 out.println(result);		// envia mensagem de volta para o cliente
             }
                 
